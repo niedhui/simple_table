@@ -48,7 +48,7 @@ module SimpleTable
     def render_tr(item)
       content_tag(:tr) do
         reduce_tags(@columns) {|column| content_tag(:td, column.to_content(item)) } +
-        reduce_tags(@ops) {|op|  content_tag(:td, op.call(item))}
+        reduce_tags(@ops) {|op|  content_tag(:td, template.capture(item,&op)) }
       end
     end
 
@@ -76,7 +76,6 @@ module SimpleTable
         content << (yield element)
       end
     end
-
   end
 
 end
