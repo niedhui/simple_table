@@ -1,6 +1,6 @@
 module SimpleTable
   class AttrTr
-    attr_accessor :name
+    attr_accessor :name, :options
 
     def initialize(name, template, options = {}, &block)
       @name, @template, @options = name, template, options.to_options
@@ -47,7 +47,7 @@ module SimpleTable
     def render_tr(attr)
       content_tag(:tr) do
         content_tag(:td, @model_class.human_attribute_name(attr.name)) + 
-        content_tag(:td, attr.to_content(@item))
+        content_tag(:td, attr.to_content(@item),attr.options[:value_td_html])
       end
     end
     
@@ -60,8 +60,7 @@ module SimpleTable
     # name
     #  attribute_name
     # options:
-    #   th_class
-    #   td_class
+    #   value_td_html
     def tr(name, options = {}, &block)
       @attrs << AttrTr.new(name, template, options, &block)
     end
