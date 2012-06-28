@@ -52,8 +52,10 @@ module SimpleTable
     end
     
     def render_op
-      content_tag(:tr) do
-        content_tag(:td,template.capture(@item,&@op_block), class: 'op', colspan: 2)
+      if @op_block
+        content_tag(:tr) do
+          content_tag(:td,template.capture(@item,&@op_block), class: 'op', colspan: 2)
+        end
       end
     end
 
