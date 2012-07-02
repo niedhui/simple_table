@@ -53,8 +53,10 @@ module SimpleTable
 
     def render_head
       content_tag :thead do
-        reduce_tags(@columns) { |column| content_tag(:th, column.label, class: column.th_class) } +
-        content_tag(:th) unless @ops.empty?
+        reduce_tags(@columns) { |column| content_tag(:th, column.label, class: column.th_class) }.tap do |html|
+          html << content_tag(:th) unless @ops.empty?
+        end
+        
       end
     end
 
