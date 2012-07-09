@@ -2,10 +2,15 @@ module SimpleTable
   class AttrTr
     attr_accessor :name, :options
 
-    def initialize(name, template, options = {}, &block)
-      @name, @template, @options = name, template, options.to_options
+    def initialize(name, model_class, template, options = {}, &block)
+      @name, @model_class , @template, @options = name, model_class, template, options.to_options
       @content_block = block if block_given?
     end
+    
+    def label
+      @options[:label] || @model_class.human_attribute_name(name)
+    end
+    
 
     def to_content(model)
       content_proc = @options[:content]
@@ -46,7 +51,7 @@ module SimpleTable
 
     def render_tr(attr)
       content_tag(:tr) do
-        content_tag(:td, @model_class.human_attribute_name(attr.name)) + 
+        content_tag(:td, attr.label) + 
         content_tag(:td, attr.to_content(@item),attr.options[:value_td_html])
       end
     end
@@ -64,7 +69,7 @@ module SimpleTable
     # options:
     #   value_td_html
     def tr(name, options = {}, &block)
-      @attrs << AttrTr.new(name, template, options, &block)
+      @attrs << AttrTr.new(name, @model_class, template, options, &block)
     end
     
     alias :attr :tr
