@@ -36,12 +36,14 @@ module SimpleTable
     # options:
     #  model_class
     #  talbe_class
+    #  tr_class
     def initialize(template,items, options = {}, &proc)
       @template, @items = template, items
       @columns , @ops = [], []
       @model_class = options.delete(:model_class)
       @table_class = (Array(options[:table_class]) << 'simple-table table table-bordered').join(' ')
       @op_td_class = ([:op] << options.delete(:op_td_class)).join(" ")
+      @tr_class = options.delete(:tr_class)
       yield self
     end
 
@@ -67,7 +69,8 @@ module SimpleTable
     end
 
     def render_tr(item)
-      content_tag(:tr) do
+      tr_class = eval_css_class(@tr_class, item)
+      content_tag(:tr, class: tr_class) do
         reduce_tags(@columns) {|column| content_tag(:td, column.to_content(item), class: column.td_class) } +
         reduce_tags(@ops) {|op|  content_tag(:td, template.capture(item,&op), class: @op_td_class) }
       end
@@ -100,6 +103,17 @@ module SimpleTable
     def reduce_tags(iter)
       iter.reduce("".html_safe) do |content, element|
         content << (yield element)
+      end
+    end
+    
+    def eval_css_class(css_class, model)
+      case css_class
+      when String
+        css_class
+      when Array
+        css_class.join(" ")
+      when Proc
+        css_class.call(model)
       end
     end
   end
