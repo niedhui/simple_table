@@ -1,35 +1,4 @@
 module EasyTable
-  class Column
-    attr_accessor :name, :th_class, :td_class
-
-    # model_class: the model class, not css class
-    # options:
-    #  th_class:  css class
-    #  td_class:  css class
-    def initialize(model_class, name, template, options = {}, &block)
-      @model_class, @name, @template,  @options = model_class, name, template, options.to_options
-      @th_class = @options.delete(:th_class)
-      @td_class = @options.delete(:td_class)
-      @content_block = block if block_given?
-    end
-
-    def label
-      @options[:label] || @model_class.human_attribute_name(name)
-    end
-
-    def to_content(model)
-      content_proc = @options[:content]
-      if content_proc
-        content_proc.call(model)
-      elsif @content_block
-        @template.capture(model, &@content_block)
-      else
-        model.send(name)
-      end
-    end
-
-
-  end
   class TableBuilder
     attr_accessor :template
 
@@ -55,7 +24,7 @@ module EasyTable
 
     def render_head
       content_tag :thead do
-        reduce_tags(@columns) { |column| content_tag(:th, column.label, class: column.th_class) }.tap do |html|
+        reduce_tags(@columns) { |column| content_tag(:th, column.label(@model_class), class: column.th_class) }.tap do |html|
           html << content_tag(:th) unless @ops.empty?
         end
 
@@ -71,7 +40,7 @@ module EasyTable
     def render_tr(item)
       tr_class = eval_css_class(@tr_class, item)
       content_tag(:tr, class: tr_class) do
-        reduce_tags(@columns) {|column| content_tag(:td, column.to_content(item), class: column.td_class) } +
+        reduce_tags(@columns) {|column| content_tag(:td, column.content(item, template), class: column.td_class) } +
         reduce_tags(@ops) {|op|  content_tag(:td, template.capture(item,&op), class: @op_td_class) }
       end
     end
@@ -81,7 +50,7 @@ module EasyTable
     #   td_class
     #   label:
     def td(name, options = {}, &block)
-      @columns << Column.new(@model_class, name, template, options, &block)
+      @columns << Column.new(name, options, &block)
     end
     alias :column :td
 
