@@ -10,14 +10,13 @@ module EasyTable
       @template, @items = template, items
       @columns , @ops = [], []
       @model_class = options.delete(:model_class)
-      @table_class = (Array(options[:table_class]) << 'easy-table table table-bordered').join(' ')
       @op_td_class = ([:op] << options.delete(:op_td_class)).join(" ")
       @tr_class = options.delete(:tr_class)
       yield self
     end
 
     def render
-      content_tag :table, class: @table_class  do
+      content_tag :table, Config.table_html  do
         render_head + render_body
       end
     end
