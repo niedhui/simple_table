@@ -1,7 +1,7 @@
-module SimpleTable
+module EasyTable
   class Column
     attr_accessor :name, :th_class, :td_class
-    
+
     # model_class: the model class, not css class
     # options:
     #  th_class:  css class
@@ -11,12 +11,12 @@ module SimpleTable
       @th_class = @options.delete(:th_class)
       @td_class = @options.delete(:td_class)
       @content_block = block if block_given?
-    end    
-    
+    end
+
     def label
       @options[:label] || @model_class.human_attribute_name(name)
     end
-    
+
     def to_content(model)
       content_proc = @options[:content]
       if content_proc
@@ -27,12 +27,12 @@ module SimpleTable
         model.send(name)
       end
     end
-    
+
 
   end
   class TableBuilder
     attr_accessor :template
-    
+
     # options:
     #  model_class
     #  talbe_class
@@ -41,7 +41,7 @@ module SimpleTable
       @template, @items = template, items
       @columns , @ops = [], []
       @model_class = options.delete(:model_class)
-      @table_class = (Array(options[:table_class]) << 'simple-table table table-bordered').join(' ')
+      @table_class = (Array(options[:table_class]) << 'easy-table table table-bordered').join(' ')
       @op_td_class = ([:op] << options.delete(:op_td_class)).join(" ")
       @tr_class = options.delete(:tr_class)
       yield self
@@ -58,7 +58,7 @@ module SimpleTable
         reduce_tags(@columns) { |column| content_tag(:th, column.label, class: column.th_class) }.tap do |html|
           html << content_tag(:th) unless @ops.empty?
         end
-        
+
       end
     end
 
@@ -105,7 +105,7 @@ module SimpleTable
         content << (yield element)
       end
     end
-    
+
     def eval_css_class(css_class, model)
       case css_class
       when String

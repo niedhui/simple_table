@@ -1,4 +1,4 @@
-module SimpleTable
+module EasyTable
   class AttrTr
     attr_accessor :name, :options
 
@@ -6,11 +6,11 @@ module SimpleTable
       @name, @model_class , @template, @options = name, model_class, template, options.to_options
       @content_block = block if block_given?
     end
-    
+
     def label
       @options[:label] || @model_class.human_attribute_name(name)
     end
-    
+
 
     def to_content(model)
       content_proc = @options[:content]
@@ -24,7 +24,7 @@ module SimpleTable
     end
 
   end
-  
+
 
   class ModelTableBuilder
     attr_accessor :template
@@ -37,25 +37,25 @@ module SimpleTable
     end
 
     def render
-      content_tag :table, class: 'simple-table table table-bordered' do
+      content_tag :table, class: 'easy-table table table-bordered' do
         render_body
       end
     end
 
     def render_body
       content_tag :tbody do
-        reduce_tags(@attrs) { |attr| render_tr(attr) } + 
+        reduce_tags(@attrs) { |attr| render_tr(attr) } +
         render_op
       end
     end
 
     def render_tr(attr)
       content_tag(:tr) do
-        content_tag(:td, attr.label) + 
+        content_tag(:td, attr.label) +
         content_tag(:td, attr.to_content(@item),attr.options[:value_td_html])
       end
     end
-    
+
     def render_op
       if @op_block
         content_tag(:tr) do
@@ -71,9 +71,9 @@ module SimpleTable
     def tr(name, options = {}, &block)
       @attrs << AttrTr.new(name, @model_class, template, options, &block)
     end
-    
+
     alias :attr :tr
-    
+
     def op(&block)
       @op_block = block
     end

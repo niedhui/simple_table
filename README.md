@@ -6,7 +6,7 @@ inspired by  [tabulatr](https://github.com/provideal/tabulatr)
 
 Add this line to your application's Gemfile:
 
-    gem 'simple_table'
+    gem 'easy_table'
 
 And then execute:
 
@@ -14,7 +14,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install simple_table
+    $ gem install easy_table
 
 ## Usage
 
