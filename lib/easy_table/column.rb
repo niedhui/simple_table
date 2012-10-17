@@ -1,7 +1,6 @@
 module EasyTable
   class Column
     attr_reader :name, :view, :options
-    attr_accessor :th_class, :td_class
 
     def initialize(name, options, &block)
       @name     = name

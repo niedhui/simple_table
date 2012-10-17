@@ -1,22 +1,23 @@
 module EasyTable
   class TableBuilder
+    attr_reader :options
     attr_accessor :template
 
     # options:
     #  model_class
-    #  talbe_class
-    #  tr_class
-    def initialize(template,items, options = {}, &proc)
+    #  table_html: {}
+    #  tr_html: {}
+    def initialize(template, items, options = {}, &proc)
       @template, @items = template, items
-      @model_class = options.delete(:model_class)
+      @options = options
+      @model_class = @options.delete(:model_class)
       @op_td_class = ([:op] << options.delete(:op_td_class)).join(" ")
-      @tr_class = options.delete(:tr_class)
       @table = Base.new
       yield @table
     end
 
     def render
-      content_tag :table, Config.table_html  do
+      content_tag :table, Config.table_html.merge(options[:table_html])  do
         render_head + render_body
       end
     end
@@ -36,8 +37,8 @@ module EasyTable
     end
 
     def render_tr(item)
-      tr_class = eval_css_class(@tr_class, item)
-      content_tag(:tr, class: tr_class) do
+      tr_html = eval_html_attrs(options[:tr_html], item)
+      content_tag(:tr, tr_html) do
         reduce_tags(@table.columns) {|column| content_tag(:td, column.content(item, template), column.options[:td_html]) } +
         reduce_tags(@table.actions) {|op|  content_tag(:td, template.capture(item,&op), class: @op_td_class) }
       end
@@ -52,12 +53,20 @@ module EasyTable
       end
     end
 
-
     private
 
     def reduce_tags(iter)
       iter.reduce("".html_safe) do |content, element|
         content << (yield element)
+      end
+    end
+
+    def eval_html_attrs(attrs, model = nil)
+      return {} if attrs.blank?
+      attrs.reduce({}) do |hash,(k,v)|
+        value = v.respond_to?(:call) ? v.call(model) : v
+        hash[k] = value
+        hash
       end
     end
 
