@@ -23,7 +23,7 @@ module EasyTable
     alias :op :action
 
     def has_actions?
-      ! actions.empty?
+      actions.empty?
     end
 
   end

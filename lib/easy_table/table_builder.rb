@@ -17,7 +17,7 @@ module EasyTable
     end
 
     def render
-      content_tag :table, Config.table_html.merge(options[:table_html])  do
+      content_tag :table, Config.table_html.merge(options[:table_html] || {})  do
         render_head + render_body
       end
     end
@@ -43,7 +43,6 @@ module EasyTable
         reduce_tags(@table.actions) {|op|  content_tag(:td, template.capture(item,&op), class: @op_td_class) }
       end
     end
-
 
     def method_missing(name, *args, &block)
       if template.respond_to? name
