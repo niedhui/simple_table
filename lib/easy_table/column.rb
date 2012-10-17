@@ -2,11 +2,10 @@ module EasyTable
   class Column
     attr_reader :name, :view, :options
     attr_accessor :th_class, :td_class
+
     def initialize(name, options, &block)
       @name     = name
       @options  = options
-      @th_class = @options.delete(:th_class)
-      @td_class = @options.delete(:td_class)
       options[:content] = block if block_given?
     end
 

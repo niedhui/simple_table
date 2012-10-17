@@ -8,11 +8,11 @@ module EasyTable
     #  tr_class
     def initialize(template,items, options = {}, &proc)
       @template, @items = template, items
-      @columns , @ops = [], []
       @model_class = options.delete(:model_class)
       @op_td_class = ([:op] << options.delete(:op_td_class)).join(" ")
       @tr_class = options.delete(:tr_class)
-      yield self
+      @table = Base.new
+      yield @table
     end
 
     def render
@@ -23,10 +23,9 @@ module EasyTable
 
     def render_head
       content_tag :thead do
-        reduce_tags(@columns) { |column| content_tag(:th, column.label(@model_class), class: column.th_class) }.tap do |html|
-          html << content_tag(:th) unless @ops.empty?
+        reduce_tags(@table.columns) { |column| content_tag(:th, column.label(@model_class),column.options[:th_html] ) }.tap do |html|
+          html << content_tag(:th) unless @table.has_actions?
         end
-
       end
     end
 
@@ -39,23 +38,11 @@ module EasyTable
     def render_tr(item)
       tr_class = eval_css_class(@tr_class, item)
       content_tag(:tr, class: tr_class) do
-        reduce_tags(@columns) {|column| content_tag(:td, column.content(item, template), class: column.td_class) } +
-        reduce_tags(@ops) {|op|  content_tag(:td, template.capture(item,&op), class: @op_td_class) }
+        reduce_tags(@table.columns) {|column| content_tag(:td, column.content(item, template), column.options[:td_html]) } +
+        reduce_tags(@table.actions) {|op|  content_tag(:td, template.capture(item,&op), class: @op_td_class) }
       end
     end
 
-    # options:
-    #   th_class
-    #   td_class
-    #   label:
-    def td(name, options = {}, &block)
-      @columns << Column.new(name, options, &block)
-    end
-    alias :column :td
-
-    def op(&block)
-      @ops << block
-    end
 
     def method_missing(name, *args, &block)
       if template.respond_to? name
