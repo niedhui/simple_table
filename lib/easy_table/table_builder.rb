@@ -5,6 +5,7 @@ module EasyTable
 
     # options:
     #  model_class
+    #  using:
     #  table_html: {}
     #  tr_html: {}
     def initialize(template, items, options = {}, &proc)
@@ -12,8 +13,8 @@ module EasyTable
       @options = options
       @model_class = @options.delete(:model_class)
       @op_td_class = ([:op] << options.delete(:op_td_class)).join(" ")
-      @table = Class.new(Base).new
-      yield @table
+      @table = (options[:using] || Class.new(Base)).new
+      yield @table if block_given?
     end
 
     def render
