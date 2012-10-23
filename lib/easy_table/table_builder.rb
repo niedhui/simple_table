@@ -12,7 +12,7 @@ module EasyTable
       @options = options
       @model_class = @options.delete(:model_class)
       @op_td_class = ([:op] << options.delete(:op_td_class)).join(" ")
-      @table = Base.new
+      @table = Class.new(Base).new
       yield @table
     end
 
