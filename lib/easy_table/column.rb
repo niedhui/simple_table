@@ -8,9 +8,9 @@ module EasyTable
       options[:content] = block if block_given?
     end
 
-    def label(model_class = nil)
-      options[:label] || if model_class
-        model_class.human_attribute_name(name)
+    def label(model_clazz = nil)
+      options[:label] || if model_clazz
+        model_clazz.human_attribute_name(name)
       else
         name.to_s.humanize
       end

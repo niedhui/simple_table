@@ -1,5 +1,10 @@
+# encoding: utf-8
 module EasyTable
   class Base
+
+    include ActiveSupport::Configurable
+    config_accessor :table_html, :tr_html, :td_html, :model_clazz
+
     def initialize
     end
 

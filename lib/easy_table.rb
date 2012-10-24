@@ -1,6 +1,8 @@
 require "easy_table/version"
 require "easy_table/config"
+require "easy_table/util"
 require "easy_table/base"
+require "easy_table/row"
 require "easy_table/column"
 require "easy_table/table_builder"
 require "easy_table/model_table_builder"
